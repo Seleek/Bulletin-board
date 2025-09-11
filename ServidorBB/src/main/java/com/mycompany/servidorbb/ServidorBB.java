@@ -94,6 +94,26 @@ public class ServidorBB {
     } else {
             escritor.println("LOGIN_FAIL");
     }
+}   else if(mensaje != null && mensaje.startsWith("MENSAJE:")){
+    String[] partes = mensaje.split(":", 4);
+    String remitente = partes[1];
+    String destinatario = partes[2];
+    String contenido = partes[3];
+
+    File archivoDestinatario = new File("usuarios",destinatario + ".txt");
+    if(!archivoDestinatario.exists()){
+        archivoDestinatario.mkdir();
+    }
+    File archivoMsg = new File(archivoDestinatario, destinatario + ".txt");
+    try(FileWriter fw = new FileWriter(archivoMsg, true)){
+        fw.write("De: " + remitente + "\n");
+        fw.write("Mensaje: " + contenido + "\n");
+        fw.write("-----\n");
+        escritor.println("Mensaje enviado correctamente a " + destinatario);
+    } catch (IOException e){
+        escritor.println("Error al enviar el mensaje a " + destinatario);
+    }
+
 }
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
         String entrada;

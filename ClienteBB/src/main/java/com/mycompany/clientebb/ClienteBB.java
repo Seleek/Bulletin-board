@@ -90,13 +90,23 @@ public class ClienteBB {
                         btnEnviar.addActionListener(ev -> {
                             String destinatario = txtDestinatario.getText().trim();
                             String mensaje = areaMensaje.getText().trim();
+                            String usuarioRemitente = txtDestinatario.getText().trim();
                             if(destinatario.isEmpty() || mensaje.isEmpty()){
                                 JOptionPane.showMessageDialog(escribirFrame, "El destinatario y el mensaje no pueden estar vacíos.");
                                 return;
                             } else {
-                                // Aquí se enviaría el mensaje al servidor
-                                JOptionPane.showMessageDialog(escribirFrame, "Mensaje enviado a " + destinatario);
-                                escribirFrame.dispose();
+                                try(
+                                    Socket salidaMsg = new Socket("localhost", 8080);
+                                    PrintWriter escritorMsg = new PrintWriter(salidaMsg.getOutputStream(), true);
+                                    BufferedReader lectorMsg = new BufferedReader(new InputStreamReader(salidaMsg.getInputStream()));
+                                 ) {
+                                    escritorMsg.println("MENSAJE:" + usuarioRemitente + ":" + destinatario + ":" + mensaje);
+                                    String respuestaMsg = lectorMsg.readLine();
+                                    JOptionPane.showMessageDialog(escribirFrame, respuestaMsg);
+                                    escribirFrame.dispose();
+                                } catch (IOException ex) {
+                                    JOptionPane.showMessageDialog(escribirFrame, "Error al enviar el mensaje: " + ex.getMessage());
+                                 }                                
                             }
                         });
 
