@@ -3,6 +3,7 @@ package com.mycompany.servidorbb;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -35,8 +36,10 @@ public class ServidorBB {
             String[] partes = mensaje.split(":");
             String usuario = partes[1];
             String contra = partes[2];
-            System.out.println("Usuario: " + usuario + " Contra: " + contra);
-            escritor.println("Registro exitoso");
+            try(FileWriter fw = new FileWriter("usuarios.txt", true)){
+                fw.write(usuario + "," + contra + "\n");
+                escritor.println("Usuario registrado: " + usuario);
+            }
         }
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
         String entrada;
