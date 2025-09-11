@@ -2,6 +2,7 @@
 package com.mycompany.servidorbb;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -11,7 +12,18 @@ import java.net.Socket;
 public class ServidorBB {
 
     public static void main(String[] args) throws IOException{
-        
+         try {
+      File archivo = new File("usuarios.txt");
+
+      if (archivo.createNewFile()) {
+        System.out.println("El archivo fue creado");
+      } else {
+        System.out.println("El archivo ya existe");
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
         ServerSocket socketEspecial = new ServerSocket(8080);
         Socket cliente = socketEspecial.accept();
 
