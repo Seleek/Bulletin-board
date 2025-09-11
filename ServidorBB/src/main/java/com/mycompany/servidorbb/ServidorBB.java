@@ -3,6 +3,7 @@ package com.mycompany.servidorbb;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,6 +37,20 @@ public class ServidorBB {
             String[] partes = mensaje.split(":");
             String usuario = partes[1];
             String contra = partes[2];
+            boolean existe = false;
+            try (BufferedReader br = new BufferedReader(new FileReader("usuarios.txt"))){
+                String renglon;
+                while((renglon = br.readLine()) != null){
+                    String[] datos = renglon.split(",");
+                    if(datos[0].equals(usuario)){
+                        existe = true;
+                        escritor.println("El usuario ya existe");
+                        break;
+                    }
+                }
+            }
+
+
             try(FileWriter fw = new FileWriter("usuarios.txt", true)){
                 fw.write(usuario + "," + contra + "\n");
                 escritor.println("Usuario registrado: " + usuario);

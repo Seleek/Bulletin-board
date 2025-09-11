@@ -27,6 +27,7 @@ public class ClienteBB {
                 JOptionPane.QUESTION_MESSAGE, null, sign, sign[0]);
         if(selecciona != null){
             if(selecciona.equals("Registrarse")){
+                
                 usuario = JOptionPane.showInputDialog("Ingrese su nombre de usuario");
                 contra = JOptionPane.showInputDialog("Ingrese su contrase��a");
                 escritor.println("REGISTRO:"+usuario+":"+contra);
