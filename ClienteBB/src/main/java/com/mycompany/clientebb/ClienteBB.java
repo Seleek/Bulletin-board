@@ -71,7 +71,40 @@ public class ClienteBB {
                     });
 
                     btnEscribirMensaje.addActionListener(e -> {
-                        JOptionPane.showMessageDialog(frame, "Ahorita hago este frame de escribir mensajes.");
+                        javax.swing.JFrame escribirFrame = new javax.swing.JFrame("Enviar mensaje");
+                        escribirFrame.setSize(400,300);
+                        escribirFrame.setLayout(new java.awt.BorderLayout());
+                        javax.swing.JPanel panelSuperior = new javax.swing.JPanel(new java.awt.FlowLayout());
+                        javax.swing.JLabel lblDestinatario = new javax.swing.JLabel("Para:");
+                        javax.swing.JTextField txtDestinatario = new javax.swing.JTextField(20);
+                        panelSuperior.add(lblDestinatario);
+                        panelSuperior.add(txtDestinatario);
+
+                        javax.swing.JTextArea areaMensaje = new javax.swing.JTextArea();
+                        areaMensaje.setLineWrap(true);
+                        areaMensaje.setWrapStyleWord(true);
+                        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(areaMensaje);
+
+                        javax.swing.JButton btnEnviar = new javax.swing.JButton("Enviar");
+
+                        btnEnviar.addActionListener(ev -> {
+                            String destinatario = txtDestinatario.getText().trim();
+                            String mensaje = areaMensaje.getText().trim();
+                            if(destinatario.isEmpty() || mensaje.isEmpty()){
+                                JOptionPane.showMessageDialog(escribirFrame, "El destinatario y el mensaje no pueden estar vacíos.");
+                                return;
+                            } else {
+                                // Aquí se enviaría el mensaje al servidor
+                                JOptionPane.showMessageDialog(escribirFrame, "Mensaje enviado a " + destinatario);
+                                escribirFrame.dispose();
+                            }
+                        });
+
+                        escribirFrame.add(panelSuperior, java.awt.BorderLayout.NORTH);
+                        escribirFrame.add(scroll, java.awt.BorderLayout.CENTER);
+                        escribirFrame.add(btnEnviar, java.awt.BorderLayout.SOUTH);
+                        escribirFrame.setLocationRelativeTo(null);
+                        escribirFrame.setVisible(true);
                     });
 
                     frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
