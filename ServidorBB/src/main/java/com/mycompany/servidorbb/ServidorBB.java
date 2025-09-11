@@ -30,14 +30,14 @@ public class ServidorBB {
         PrintWriter escritor = new PrintWriter(cliente.getOutputStream(), true);
         BufferedReader lectorSocket = new BufferedReader(new InputStreamReader(
                 cliente.getInputStream()));
-        BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
+     /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
         String entrada;
         String mensaje;
         while((entrada = lectorSocket.readLine())!= null){
             System.out.println(entrada.toUpperCase());
             mensaje = teclado.readLine();
             escritor.println(mensaje);
-        }
+        }*/
         cliente.close();
     }
 }
