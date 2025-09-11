@@ -57,6 +57,17 @@ public class ServidorBB {
                 fw.write(usuario + "," + contra + "\n");
                 escritor.println("Usuario registrado: " + usuario);
             }
+
+            File carpetaUsuarios = new File("usuarios");
+            if(!carpetaUsuarios.exists()){
+                carpetaUsuarios.mkdir();
+            }
+            File archivoUsuario = new File (carpetaUsuarios, usuario + ".txt");
+            if(archivoUsuario.createNewFile()){
+                System.out.println("Archivo creado para "+ usuario);
+            } else{
+                System.out.println("El archivo ya existe para "+ usuario);
+            }
             }
         }
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
