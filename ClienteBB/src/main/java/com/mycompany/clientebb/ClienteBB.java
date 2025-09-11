@@ -60,6 +60,28 @@ public class ClienteBB {
                     respuesta = lector.readLine();
                     if ("LOGIN_OK".equals(respuesta)) {
                     JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso!");
+
+                    //CREAR INTERFAZ DE USUARIO, PROFE TENGO SUEÑO
+                    javax.swing.JFrame frame = new javax.swing.JFrame("Menu principal");
+                    javax.swing.JButton btnVerMensajes = new javax.swing.JButton("Ver mensajes");
+                    javax.swing.JButton btnEscribirMensaje = new javax.swing.JButton("Enviar mensaje");
+
+                    btnVerMensajes.addActionListener(e -> {
+                        JOptionPane.showMessageDialog(frame, "Ahorita hago este frame de mensajes.");
+                    });
+
+                    btnEscribirMensaje.addActionListener(e -> {
+                        JOptionPane.showMessageDialog(frame, "Ahorita hago este frame de escribir mensajes.");
+                    });
+
+                    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+                    frame.setSize(300, 100);
+                    frame.setLayout(new java.awt.FlowLayout());
+                    frame.add(btnVerMensajes);
+                    frame.add(btnEscribirMensaje);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+
                     break;
                 } else if ("LOGIN_FAIL".equals(respuesta)) {
             JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.");
