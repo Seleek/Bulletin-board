@@ -35,6 +35,8 @@ public class ServidorBB {
         BufferedReader lectorSocket = new BufferedReader(new InputStreamReader(
                 cliente.getInputStream()));
         String mensaje = lectorSocket.readLine();
+
+        //REVISAR EL REGISTRO
         if(mensaje != null && mensaje.startsWith("REGISTRO:")){
             String[] partes = mensaje.split(":");
             String usuario = partes[1];
@@ -70,6 +72,29 @@ public class ServidorBB {
             }
             }
         }
+
+        //REVISAR EL LOGIN
+        else if(mensaje != null && mensaje.startsWith("LOGIN:")){
+            String[] partes = mensaje.split(":");
+            String usuario = partes[1];
+            String contra = partes[2];
+            boolean loginOk = false;
+        try (BufferedReader br = new BufferedReader(new FileReader("usuarios.txt"))){
+                String renglon;
+            while((renglon = br.readLine()) != null){
+                String[] datos = renglon.split(",");
+            if(datos[0].equals(usuario) && datos[1].equals(contra)){
+                loginOk = true;
+                break;
+            }
+        }
+    }
+        if(loginOk){
+            escritor.println("LOGIN_OK");
+    } else {
+            escritor.println("LOGIN_FAIL");
+    }
+}
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
         String entrada;
         String mensaje;

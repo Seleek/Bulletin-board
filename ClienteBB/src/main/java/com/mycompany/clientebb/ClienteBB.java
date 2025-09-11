@@ -18,17 +18,18 @@ public class ClienteBB {
         String usuario;
         String contra;
 
+    while (true) {
         Object selecciona = JOptionPane.showInputDialog(
         null, "Selecciona una opcion: ", "Menu de opciones", 
                 JOptionPane.QUESTION_MESSAGE, null, sign, sign[0]);
         if(selecciona != null){
+
+            //REGISTRO DE USUARIO
             if(selecciona.equals("Registrarse")){
                 String respuesta = "";
                 while(respuesta == null || !respuesta.startsWith("Usuario registrado:")){
                     usuario = JOptionPane.showInputDialog("Ingrese su nombre de usuario");
                     contra = JOptionPane.showInputDialog("Ingrese su contraseña");
-                    
-                    // Crear nueva conexión para cada intento
                     try (
                         Socket salida = new Socket("localhost",8080);
                         PrintWriter escritor = new PrintWriter(salida.getOutputStream(), true);
@@ -42,9 +43,29 @@ public class ClienteBB {
                         }
                     }
                 }
- 
-            }else{
-                System.out.println("El usuario cancelo eleccion");
+                JOptionPane.showMessageDialog(null, "Registro exitoso!");
+
+                //INICIO DE SESION
+            } else if(selecciona.equals("Iniciar sesion")){
+                usuario = JOptionPane.showInputDialog("Ingrese su nombre de usuario");
+                contra = JOptionPane.showInputDialog("Ingrese su contraseña");
+                String respuesta = "";
+   
+                try (
+                    Socket salida = new Socket("localhost",8080);
+                    PrintWriter escritor = new PrintWriter(salida.getOutputStream(), true);
+                    BufferedReader lector = new BufferedReader(new InputStreamReader(salida.getInputStream()))
+            ) {
+                    escritor.println("LOGIN:"+usuario+":"+contra);
+                    respuesta = lector.readLine();
+                    if ("LOGIN_OK".equals(respuesta)) {
+                    JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso!");
+                    break;
+                } else if ("LOGIN_FAIL".equals(respuesta)) {
+            JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.");
+        }
+    }
+            }
         }
         /*String cadena = teclado.readLine();
         String mensaje;
