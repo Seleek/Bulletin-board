@@ -30,6 +30,14 @@ public class ServidorBB {
         PrintWriter escritor = new PrintWriter(cliente.getOutputStream(), true);
         BufferedReader lectorSocket = new BufferedReader(new InputStreamReader(
                 cliente.getInputStream()));
+        String mensaje = lectorSocket.readLine();
+        if(mensaje.startsWith("REGISTRO:")){
+            String[] partes = mensaje.split(":");
+            String usuario = partes[1];
+            String contra = partes[2];
+            System.out.println("Usuario: " + usuario + " Contra: " + contra);
+            escritor.println("Registro exitoso");
+        }
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
         String entrada;
         String mensaje;
