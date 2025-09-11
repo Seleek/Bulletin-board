@@ -2,3 +2,9 @@ Prueba1,123
 prueba2,321
 Prueba 1,123
 Prueba 1,1234
+Prueba 1,123
+Prueba 1,12345
+Cliente existente,para ver si no se registra
+registro repetido,12
+registro repetido 2,12345
+registro repetido 3,123

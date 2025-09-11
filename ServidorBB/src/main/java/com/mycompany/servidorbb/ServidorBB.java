@@ -27,13 +27,15 @@ public class ServidorBB {
       e.printStackTrace();
     }
         ServerSocket socketEspecial = new ServerSocket(8080);
+
+        while (true){
         Socket cliente = socketEspecial.accept();
 
         PrintWriter escritor = new PrintWriter(cliente.getOutputStream(), true);
         BufferedReader lectorSocket = new BufferedReader(new InputStreamReader(
                 cliente.getInputStream()));
         String mensaje = lectorSocket.readLine();
-        if(mensaje.startsWith("REGISTRO:")){
+        if(mensaje != null && mensaje.startsWith("REGISTRO:")){
             String[] partes = mensaje.split(":");
             String usuario = partes[1];
             String contra = partes[2];
@@ -50,10 +52,11 @@ public class ServidorBB {
                 }
             }
 
-
+            if(!existe){
             try(FileWriter fw = new FileWriter("usuarios.txt", true)){
                 fw.write(usuario + "," + contra + "\n");
                 escritor.println("Usuario registrado: " + usuario);
+            }
             }
         }
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
@@ -65,5 +68,6 @@ public class ServidorBB {
             escritor.println(mensaje);
         }*/
         cliente.close();
+        }
     }
 }
