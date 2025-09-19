@@ -119,7 +119,7 @@ public class ServidorBB {
     String usuario = partes[1];
 
     File archivoUsuario = new File("usuarios", usuario + ".txt");
-    if(!archivoUsuario.exists()){
+    if(archivoUsuario.exists()){
         try(BufferedReader br = new BufferedReader(new FileReader(archivoUsuario))){
             String linea;
             while((linea = br.readLine()) != null){

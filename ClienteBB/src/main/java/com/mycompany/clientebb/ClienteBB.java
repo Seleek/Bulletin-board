@@ -9,7 +9,6 @@ import java.net.Socket;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -75,16 +74,16 @@ public class ClienteBB {
                     javax.swing.JButton btnEscribirMensaje = new javax.swing.JButton("Enviar mensaje");
 
                     btnVerMensajes.addActionListener(e -> {
-                        JOptionPane.showMessageDialog(frame, "Ahorita hago este frame de mensajes.");
-                        JFrame frameMensajes = new JFrame("Mensajes de " + usuarioRemitente);
-                        frameMensajes.setSize(400, 300);
+                        javax.swing.JFrame frameMensajes = new javax.swing.JFrame("Mensajes de " + usuarioRemitente);
+                        frameMensajes.setSize(400,300);
+                        frameMensajes.setLayout(new java.awt.BorderLayout());
                         frameMensajes.setLayout(new BorderLayout());
 
                         DefaultListModel<String> modeloMensajes = new DefaultListModel<>();
                         JList<String> listaMensajes = new JList<>(modeloMensajes);
                         JScrollPane scrollPane = new JScrollPane(listaMensajes);
                         JButton btnEliminar = new JButton("Eliminar mensaje");
-
+                        
                         try (
                             Socket socket = new Socket("localhost", 8080);
                             PrintWriter escritorMensajes = new PrintWriter(socket.getOutputStream(), true);
@@ -128,6 +127,10 @@ public class ClienteBB {
                             }
                         });
 
+                        frameMensajes.add(scrollPane, java.awt.BorderLayout.CENTER);
+                        frameMensajes.add(btnEliminar, java.awt.BorderLayout.SOUTH);
+                        frameMensajes.setLocationRelativeTo(null);
+                        frameMensajes.setVisible(true);
                     });
 
                     btnEscribirMensaje.addActionListener(e -> {
