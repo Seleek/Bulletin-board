@@ -1,14 +1,21 @@
 package com.mycompany.clientebb;
 
+import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 
 public class ClienteBB {
+
 
     public static void main(String[] args) throws IOException{
         
@@ -69,6 +76,58 @@ public class ClienteBB {
 
                     btnVerMensajes.addActionListener(e -> {
                         JOptionPane.showMessageDialog(frame, "Ahorita hago este frame de mensajes.");
+                        JFrame frameMensajes = new JFrame("Mensajes de " + usuarioRemitente);
+                        frameMensajes.setSize(400, 300);
+                        frameMensajes.setLayout(new BorderLayout());
+
+                        DefaultListModel<String> modeloMensajes = new DefaultListModel<>();
+                        JList<String> listaMensajes = new JList<>(modeloMensajes);
+                        JScrollPane scrollPane = new JScrollPane(listaMensajes);
+                        JButton btnEliminar = new JButton("Eliminar mensaje");
+
+                        try (
+                            Socket socket = new Socket("localhost", 8080);
+                            PrintWriter escritorMensajes = new PrintWriter(socket.getOutputStream(), true);
+                            BufferedReader lectorMensajes = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    ){
+                            escritorMensajes.println("OBTENER_MENSAJES:" + usuarioRemitente);
+                            String linea;
+                            while ((linea = lectorMensajes.readLine()) != null) {
+                                modeloMensajes.addElement(linea);
+                            }
+                           
+                    }  catch (Exception ex) {
+                        JOptionPane.showMessageDialog(frameMensajes, "Error al obtener mensajes: " + ex.getMessage());
+                            return;
+                        }
+
+                        btnEliminar.addActionListener(ev -> {
+                            int indiceSeleccionado = listaMensajes.getSelectedIndex();
+                            if (indiceSeleccionado != -1) {
+                                int confirmacion = JOptionPane.showConfirmDialog(frameMensajes, "¿Estás seguro de eliminar este mensaje?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                                if (confirmacion == JOptionPane.YES_OPTION) {
+                                try (
+                                    Socket socketEliminar = new Socket("localhost", 8080);
+                                    PrintWriter escritorEliminar = new PrintWriter(socketEliminar.getOutputStream(), true);
+                                    BufferedReader lectorEliminar = new BufferedReader(new InputStreamReader(socketEliminar.getInputStream()));
+                                ){
+                                    escritorEliminar.println("ELIMINAR_MENSAJE:" + usuarioRemitente + ":" + indiceSeleccionado);
+                                    String respuestaEliminar = lectorEliminar.readLine();
+                                    if ("MENSAJE_ELIMINADO".equals(respuestaEliminar)) {
+                                        modeloMensajes.remove(indiceSeleccionado);
+                                        JOptionPane.showMessageDialog(frameMensajes, "Mensaje eliminado.");
+                                    } else {
+                                        JOptionPane.showMessageDialog(frameMensajes, "Error al eliminar el mensaje.");
+                                    }
+                                } catch (IOException ex) {
+                                    JOptionPane.showMessageDialog(frameMensajes, "Error al eliminar el mensaje: " + ex.getMessage());
+                                }
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(frameMensajes, "Seleccione un mensaje para eliminar.");
+                            }
+                        });
+
                     });
 
                     btnEscribirMensaje.addActionListener(e -> {

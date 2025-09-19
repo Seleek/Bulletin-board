@@ -114,15 +114,66 @@ public class ServidorBB {
     
 }
 
+}else if(mensaje != null && mensaje.startsWith("OBTENER_MENSAJES:")){
+    String[] partes = mensaje.split(":");
+    String usuario = partes[1];
+
+    File archivoUsuario = new File("usuarios", usuario + ".txt");
+    if(!archivoUsuario.exists()){
+        try(BufferedReader br = new BufferedReader(new FileReader(archivoUsuario))){
+            String linea;
+            while((linea = br.readLine()) != null){
+                escritor.println(linea);
+            }
+        } catch (IOException e){
+            escritor.println("Error al obtener mensajes para " + usuario);
+        }
+    } 
+}else if(mensaje != null && mensaje.startsWith("ELIMINAR_MENSAJES:")){
+    String[] partes = mensaje.split(":");
+    String usuario = partes[1];
+    int index;
+    try {
+        index = Integer.parseInt(partes[2]);
+    } catch (NumberFormatException e) {
+        escritor.println("Índice inválido para eliminar mensaje.");
+        return;
+    }
+
+    File archivoUsuario = new File("usuarios", usuario + ".txt");
+    if(!archivoUsuario.exists()){
+        escritor.println("No hay mensajes para eliminar para " + usuario);
+        return;
+    } else{
+        try {
+            BufferedReader br = new BufferedReader (new FileReader(archivoUsuario));
+            java.util.List<String> lineas = new java.util.ArrayList<>();
+            String linea;
+            while((linea = br.readLine()) != null){
+                lineas.add(linea);
+            }
+            br.close();
+
+            int inicio = index * 3;
+            if(inicio >=0 && inicio + 2 < lineas.size()){
+                lineas.remove(inicio); // "De: ..."
+                lineas.remove(inicio); // "Mensaje: ..."
+                lineas.remove(inicio); // "-----"
+                
+                FileWriter fw = new FileWriter(archivoUsuario, false);
+                for(String l : lineas){
+                    fw.write(l + "\n");
+                }
+                fw.close();
+                escritor.println("Mensaje eliminado correctamente.");
+            } else{
+                escritor.println("Índice fuera de rango para eliminar mensaje.");
+            }
+        } catch (Exception e) {
+            escritor.println("Error al eliminar mensaje para " + usuario);
+        }
+    }
 }
-     /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
-        String entrada;
-        String mensaje;
-        while((entrada = lectorSocket.readLine())!= null){
-            System.out.println(entrada.toUpperCase());
-            mensaje = teclado.readLine();
-            escritor.println(mensaje);
-        }*/
         cliente.close();
         }
     }
