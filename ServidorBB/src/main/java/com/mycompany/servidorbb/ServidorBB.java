@@ -103,7 +103,7 @@ public class ServidorBB {
     File archivoDestinatario = new File("usuarios",destinatario + ".txt");
     if(!archivoDestinatario.exists()){
         archivoDestinatario.mkdir();
-    }else{
+    }
     try(FileWriter fw = new FileWriter(archivoDestinatario, true)){
         fw.write("De: " + remitente + "\n");
         fw.write("Mensaje: " + contenido + "\n");
@@ -111,7 +111,7 @@ public class ServidorBB {
         escritor.println("Mensaje enviado correctamente a " + destinatario);
     } catch (IOException e){
         escritor.println("Error al enviar el mensaje a " + destinatario);
-    }
+    
 }
 
 }
