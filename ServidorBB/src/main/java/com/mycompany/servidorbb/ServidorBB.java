@@ -104,7 +104,6 @@ public class ServidorBB {
     if(!archivoDestinatario.exists()){
         archivoDestinatario.mkdir();
     }else{
-
     try(FileWriter fw = new FileWriter(archivoDestinatario, true)){
         fw.write("De: " + remitente + "\n");
         fw.write("Mensaje: " + contenido + "\n");
