@@ -103,9 +103,9 @@ public class ServidorBB {
     File archivoDestinatario = new File("usuarios",destinatario + ".txt");
     if(!archivoDestinatario.exists()){
         archivoDestinatario.mkdir();
-    }
-    File archivoMsg = new File(archivoDestinatario, destinatario + ".txt");
-    try(FileWriter fw = new FileWriter(archivoMsg, true)){
+    }else{
+
+    try(FileWriter fw = new FileWriter(archivoDestinatario, true)){
         fw.write("De: " + remitente + "\n");
         fw.write("Mensaje: " + contenido + "\n");
         fw.write("-----\n");
@@ -113,6 +113,7 @@ public class ServidorBB {
     } catch (IOException e){
         escritor.println("Error al enviar el mensaje a " + destinatario);
     }
+}
 
 }
      /*   BufferedReader teclado = new BufferedReader( new InputStreamReader(System.in));
