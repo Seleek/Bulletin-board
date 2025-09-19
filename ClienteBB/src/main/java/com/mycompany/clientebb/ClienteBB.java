@@ -60,6 +60,7 @@ public class ClienteBB {
                     respuesta = lector.readLine();
                     if ("LOGIN_OK".equals(respuesta)) {
                     JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso!");
+                    final String usuarioRemitente = usuario;
 
                     //CREAR INTERFAZ DE USUARIO, PROFE TENGO SUEÑO
                     javax.swing.JFrame frame = new javax.swing.JFrame("Menu principal");
@@ -86,11 +87,9 @@ public class ClienteBB {
                         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(areaMensaje);
 
                         javax.swing.JButton btnEnviar = new javax.swing.JButton("Enviar");
-
                         btnEnviar.addActionListener(ev -> {
                             String destinatario = txtDestinatario.getText().trim();
                             String mensaje = areaMensaje.getText().trim();
-                            String usuarioRemitente = txtDestinatario.getText().trim();
                             if(destinatario.isEmpty() || mensaje.isEmpty()){
                                 JOptionPane.showMessageDialog(escribirFrame, "El destinatario y el mensaje no pueden estar vacíos.");
                                 return;
