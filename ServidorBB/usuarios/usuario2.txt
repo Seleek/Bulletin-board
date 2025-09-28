@@ -1,3 +1,6 @@
 De: usuario1
 Mensaje: papa
 -----
+De: usuario1
+Mensaje: Prueba reinicio
+-----
