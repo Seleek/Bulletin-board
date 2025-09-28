@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class ClienteBB {
 
@@ -83,7 +84,21 @@ public class ClienteBB {
                         JList<String> listaMensajes = new JList<>(modeloMensajes);
                         JScrollPane scrollPane = new JScrollPane(listaMensajes);
                         JButton btnEliminar = new JButton("Eliminar mensaje");
+
+                        JTextArea areaMensajes = new JTextArea();
+                        areaMensajes.setEditable(false);
+                        areaMensajes.setLineWrap(true);
+                        areaMensajes.setWrapStyleWord(true);
+                        JScrollPane scrollArea = new JScrollPane(areaMensajes);
                         
+                        listaMensajes.addListSelectionListener(e2 -> {
+                            int indice = listaMensajes.getSelectedIndex();
+                            if (indice != -1) {
+                                areaMensajes.setText(modeloMensajes.getElementAt(indice));
+                            }
+                        });
+
+
                         try (
                             Socket socket = new Socket("localhost", 8080);
                             PrintWriter escritorMensajes = new PrintWriter(socket.getOutputStream(), true);
@@ -91,8 +106,16 @@ public class ClienteBB {
                     ){
                             escritorMensajes.println("OBTENER_MENSAJES:" + usuarioRemitente);
                             String linea;
+                            StringBuilder bloque = new StringBuilder();
                             while ((linea = lectorMensajes.readLine()) != null) {
-                                modeloMensajes.addElement(linea);
+                                bloque.append(linea).append("\n");
+                                if (linea.equals("-----")) {
+                                    modeloMensajes.addElement(bloque.toString());
+                                    bloque.setLength(0);
+                                }
+                            }
+                            if(bloque.length() > 0){
+                                modeloMensajes.addElement(bloque.toString());
                             }
                            
                     }  catch (Exception ex) {
@@ -128,6 +151,7 @@ public class ClienteBB {
                         });
 
                         frameMensajes.add(scrollPane, java.awt.BorderLayout.CENTER);
+                        frameMensajes.add(scrollArea, java.awt.BorderLayout.EAST); 
                         frameMensajes.add(btnEliminar, java.awt.BorderLayout.SOUTH);
                         frameMensajes.setLocationRelativeTo(null);
                         frameMensajes.setVisible(true);
