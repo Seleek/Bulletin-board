@@ -24,7 +24,7 @@ public class ClienteBB {
         BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
         Object[] sign = {"Iniciar sesion", "Registrarse"};
         String usuario;
-        String contra;
+        String contra = "";
 
     while (true) {
         Object selecciona = JOptionPane.showInputDialog(
@@ -55,10 +55,32 @@ public class ClienteBB {
 
                 //INICIO DE SESION
             } else if(selecciona.equals("Iniciar sesion")){
-                usuario = JOptionPane.showInputDialog("Ingrese su nombre de usuario");
-                contra = JOptionPane.showInputDialog("Ingrese su contraseña");
                 String respuesta = "";
-   
+                while (true) { 
+                    usuario = JOptionPane.showInputDialog("Ingrese su nombre de usuario");
+                    if(usuario == null) break;
+                    usuario = usuario.trim();
+                    if(usuario.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "El nombre de usuario no puede estar vacío.");
+                        continue;
+                    }
+                    contra = JOptionPane.showInputDialog("Ingrese su contraseña");
+                    if(contra == null) break;
+                    contra = contra.trim();
+                    if(contra.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "La contraseña no puede estar vacía.");
+                        continue;
+                    }
+                    break;
+                }
+                if(usuario == null || contra == null ){
+                    
+                    continue;
+                }
+                if(usuario.isEmpty() || contra.isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Inicio de sesión cancelado o datos inválidos.");
+                    continue;
+                }
                 try (
                     Socket salida = new Socket("localhost",8080);
                     PrintWriter escritor = new PrintWriter(salida.getOutputStream(), true);
@@ -251,12 +273,8 @@ public class ClienteBB {
                     frame.setVisible(true);
 
                     while(frame.isVisible()){
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException ex) {
-                        }
+                        try {Thread.sleep(100);} catch (InterruptedException ex) {}
                     }
-                    continue;
                 } else if ("LOGIN_FAIL".equals(respuesta)) {
             JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.");
         }
