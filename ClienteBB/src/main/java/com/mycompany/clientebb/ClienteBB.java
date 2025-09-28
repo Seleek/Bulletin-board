@@ -74,8 +74,13 @@ public class ClienteBB {
                     javax.swing.JFrame frame = new javax.swing.JFrame("Menu principal");
                     javax.swing.JButton btnVerMensajes = new javax.swing.JButton("Ver mensajes");
                     javax.swing.JButton btnEscribirMensaje = new javax.swing.JButton("Enviar mensaje");
+                    javax.swing.JButton btnCerrarSesion = new javax.swing.JButton("Cerrar sesión");
+                    btnCerrarSesion.addActionListener(e -> {
+                        frame.dispose();
+                    });
 
                     btnVerMensajes.addActionListener(e -> {
+                        
                         javax.swing.JFrame frameMensajes = new javax.swing.JFrame("Mensajes de " + usuarioRemitente);
                         frameMensajes.setSize(400,300);
                         frameMensajes.setLayout(new java.awt.BorderLayout());
@@ -152,9 +157,15 @@ public class ClienteBB {
                             }
                         });
 
+                        JButton btnVolver = new JButton("Volver");
+                        btnVolver.addActionListener(ev -> frameMensajes.dispose());
+                        javax.swing.JPanel panelBotones = new javax.swing.JPanel(new java.awt.FlowLayout());
+                        panelBotones.add(btnEliminar);
+                        panelBotones.add(btnVolver);
+
                         frameMensajes.add(scrollPane, java.awt.BorderLayout.CENTER);
                         frameMensajes.add(scrollArea, java.awt.BorderLayout.EAST); 
-                        frameMensajes.add(btnEliminar, java.awt.BorderLayout.SOUTH);
+                        frameMensajes.add(panelBotones, java.awt.BorderLayout.SOUTH);
                         frameMensajes.setLocationRelativeTo(null);
                         frameMensajes.setVisible(true);
                     });
@@ -216,10 +227,16 @@ public class ClienteBB {
                                  }                                
                             }
                         });
+                        javax.swing.JButton btnvolver = new javax.swing.JButton("Volver");
+                        btnvolver.addActionListener(ev -> escribirFrame.dispose());
 
+                        javax.swing.JPanel panelBotones = new javax.swing.JPanel(new java.awt.FlowLayout());
+                        panelBotones.add(btnEnviar);
+                        panelBotones.add(btnvolver);
+
+                        escribirFrame.add(panelBotones, java.awt.BorderLayout.SOUTH);
                         escribirFrame.add(panelSuperior, java.awt.BorderLayout.NORTH);
                         escribirFrame.add(scroll, java.awt.BorderLayout.CENTER);
-                        escribirFrame.add(btnEnviar, java.awt.BorderLayout.SOUTH);
                         escribirFrame.setLocationRelativeTo(null);
                         escribirFrame.setVisible(true);
                     });
@@ -229,10 +246,17 @@ public class ClienteBB {
                     frame.setLayout(new java.awt.FlowLayout());
                     frame.add(btnVerMensajes);
                     frame.add(btnEscribirMensaje);
+                    frame.add(btnCerrarSesion);
                     frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
 
-                    break;
+                    while(frame.isVisible()){
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ex) {
+                        }
+                    }
+                    continue;
                 } else if ("LOGIN_FAIL".equals(respuesta)) {
             JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.");
         }
