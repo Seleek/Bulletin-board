@@ -121,9 +121,17 @@ public class ServidorBB {
     File archivoUsuario = new File("usuarios", usuario + ".txt");
     if(archivoUsuario.exists()){
         try(BufferedReader br = new BufferedReader(new FileReader(archivoUsuario))){
+            StringBuilder mensajeCompleto = new StringBuilder();
             String linea;
             while((linea = br.readLine()) != null){
-                escritor.println(linea);
+                mensajeCompleto.append(linea).append("\n");
+                if(linea.equals("-----")){
+                    escritor.println(mensajeCompleto.toString());
+                    mensajeCompleto.setLength(0); 
+                }
+            }
+            if(mensajeCompleto.length() > 0){
+                escritor.println(mensajeCompleto.toString());
             }
         } catch (IOException e){
             escritor.println("Error al obtener mensajes para " + usuario);
