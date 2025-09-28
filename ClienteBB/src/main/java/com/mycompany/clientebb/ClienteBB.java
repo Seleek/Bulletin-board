@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -136,6 +137,7 @@ public class ClienteBB {
                                     escritorEliminar.println("ELIMINAR_MENSAJE:" + usuarioRemitente + ":" + indiceSeleccionado);
                                     String respuestaEliminar = lectorEliminar.readLine();
                                     if ("MENSAJE_ELIMINADO".equals(respuestaEliminar)) {
+                                        areaMensajes.setText("");
                                         modeloMensajes.remove(indiceSeleccionado);
                                         JOptionPane.showMessageDialog(frameMensajes, "Mensaje eliminado.");
                                     } else {
@@ -163,9 +165,27 @@ public class ClienteBB {
                         escribirFrame.setLayout(new java.awt.BorderLayout());
                         javax.swing.JPanel panelSuperior = new javax.swing.JPanel(new java.awt.FlowLayout());
                         javax.swing.JLabel lblDestinatario = new javax.swing.JLabel("Para:");
-                        javax.swing.JTextField txtDestinatario = new javax.swing.JTextField(20);
+                        DefaultComboBoxModel<String> modeloUsuarios = new DefaultComboBoxModel<>();
+                        try (
+                            Socket socketUsuarios = new Socket("localhost", 8080);
+                            PrintWriter escritorUsuarios = new PrintWriter(socketUsuarios.getOutputStream(), true);
+                            BufferedReader lectorUsuarios = new BufferedReader(new InputStreamReader(socketUsuarios.getInputStream()));
+                    ){
+                            escritorUsuarios.println("lista_usuarios");
+                            String linea;
+                            while ((linea = lectorUsuarios.readLine()) != null) {
+                                if(linea.equals("__END__")) break;
+                                if (!linea.equals(usuarioRemitente)) {
+                                    modeloUsuarios.addElement(linea);
+                                }
+                            }
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(escribirFrame, "Error al obtener la lista de usuarios: " + ex.getMessage());
+                        }
+                        javax.swing.JComboBox<String> comboDestinatarios = new javax.swing.JComboBox<>(modeloUsuarios);
+                        comboDestinatarios.setEditable(true);
                         panelSuperior.add(lblDestinatario);
-                        panelSuperior.add(txtDestinatario);
+                        panelSuperior.add(comboDestinatarios);
 
                         javax.swing.JTextArea areaMensaje = new javax.swing.JTextArea();
                         areaMensaje.setLineWrap(true);
@@ -174,7 +194,9 @@ public class ClienteBB {
 
                         javax.swing.JButton btnEnviar = new javax.swing.JButton("Enviar");
                         btnEnviar.addActionListener(ev -> {
-                            String destinatario = txtDestinatario.getText().trim();
+                            String destinatario = (String) comboDestinatarios.getSelectedItem();
+                            if(destinatario == null) destinatario = "";
+                            destinatario = destinatario.trim();
                             String mensaje = areaMensaje.getText().trim();
                             if(destinatario.isEmpty() || mensaje.isEmpty()){
                                 JOptionPane.showMessageDialog(escribirFrame, "El destinatario y el mensaje no pueden estar vacíos.");

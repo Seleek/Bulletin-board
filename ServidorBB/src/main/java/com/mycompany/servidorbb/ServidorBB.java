@@ -137,50 +137,55 @@ public class ServidorBB {
             escritor.println("Error al obtener mensajes para " + usuario);
         }
     } 
-}else if(mensaje != null && mensaje.startsWith("ELIMINAR_MENSAJES:")){
-    String[] partes = mensaje.split(":");
+}else if(mensaje != null && mensaje.startsWith("ELIMINAR_MENSAJE:")){
+     String[] partes = mensaje.split(":", 3);
     String usuario = partes[1];
-    int index;
-    try {
-        index = Integer.parseInt(partes[2]);
-    } catch (NumberFormatException e) {
-        escritor.println("Índice inválido para eliminar mensaje.");
-        return;
-    }
+    int indiceEliminar = Integer.parseInt(partes[2]);
 
     File archivoUsuario = new File("usuarios", usuario + ".txt");
-    if(!archivoUsuario.exists()){
-        escritor.println("No hay mensajes para eliminar para " + usuario);
-        return;
-    } else{
-        try {
-            BufferedReader br = new BufferedReader (new FileReader(archivoUsuario));
-            java.util.List<String> lineas = new java.util.ArrayList<>();
+    if (archivoUsuario.exists()) {
+        java.util.List<String> bloques = new java.util.ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoUsuario))) {
+            StringBuilder bloque = new StringBuilder();
             String linea;
-            while((linea = br.readLine()) != null){
-                lineas.add(linea);
-            }
-            br.close();
-
-            int inicio = index * 3;
-            if(inicio >=0 && inicio + 2 < lineas.size()){
-                lineas.remove(inicio); // "De: ..."
-                lineas.remove(inicio); // "Mensaje: ..."
-                lineas.remove(inicio); // "-----"
-                
-                FileWriter fw = new FileWriter(archivoUsuario, false);
-                for(String l : lineas){
-                    fw.write(l + "\n");
+            while ((linea = br.readLine()) != null) {
+                bloque.append(linea).append("\n");
+                if (linea.equals("-----")) {
+                    bloques.add(bloque.toString());
+                    bloque.setLength(0);
                 }
-                fw.close();
-                escritor.println("Mensaje eliminado correctamente.");
-            } else{
-                escritor.println("Índice fuera de rango para eliminar mensaje.");
             }
-        } catch (Exception e) {
-            escritor.println("Error al eliminar mensaje para " + usuario);
+            if (bloque.length() > 0) {
+                bloques.add(bloque.toString());
+            }
+        }
+        // Elimina el bloque correspondiente. Quiero salchipapas, Esto si lo revisara el profe?
+        if (indiceEliminar >= 0 && indiceEliminar < bloques.size()) {
+            bloques.remove(indiceEliminar);
+            try (FileWriter fw = new FileWriter(archivoUsuario, false)) {
+                for (String b : bloques) {
+                    fw.write(b);
+                }
+            }
+            escritor.println("MENSAJE_ELIMINADO");
+        } else {
+            escritor.println("ERROR_ELIMINAR");
+        }
+    } else {
+        escritor.println("ERROR_ELIMINAR");
+    }
+}else if(mensaje != null && mensaje.equals("LISTA_USUARIOS")){
+    File archivoUsuarios = new File("usuarios.txt");
+    if (archivoUsuarios.exists()) {
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoUsuarios))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                escritor.println(partes[0]);
+            }
         }
     }
+     escritor.println("__END__");
 }
         cliente.close();
         }
