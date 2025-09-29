@@ -206,6 +206,33 @@ public class ClienteBB {
                         listaUsuarios.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                         JScrollPane scrollPane = new JScrollPane(listaUsuarios);
 
+                        java.util.Set<String> bloqueados = new java.util.HashSet<>();
+                        java.io.File archivoBloqueados = new java.io.File("bloqueados_" + usuarioRemitente + ".txt");
+                        if (archivoBloqueados.exists()) {
+                            try(java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(archivoBloqueados))) {
+                                String linea;
+                                while ((linea = br.readLine()) != null) {
+                                    bloqueados.add(linea.trim());
+                                }
+                            } catch (IOException ex) {
+                                JOptionPane.showMessageDialog(frameBloquear, "Error al leer el archivo de bloqueados: " + ex.getMessage());
+                            }
+                        }
+
+                        listaUsuarios.setCellRenderer(new javax.swing.DefaultListCellRenderer(){
+                            @Override
+                            public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus){
+                                java.awt.Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                                String usuario = value.toString();
+                                if(bloqueados.contains(usuario)){
+                                    c.setBackground(java.awt.Color.RED);
+                                }else{
+                                    c.setBackground(java.awt.Color.WHITE);
+                                }
+                                return c;
+                            }
+                        });
+
                         try (
                             Socket socketUsuarios = new Socket("localhost", 8080);
                             PrintWriter escritorUsuarios = new PrintWriter(socketUsuarios.getOutputStream(), true);
@@ -223,7 +250,6 @@ public class ClienteBB {
                             JOptionPane.showMessageDialog(frameBloquear, "Error al obtener la lista de usuarios: " + ex.getMessage());
                         }
 
-                        java.util.Set<String> bloqueados = new java.util.HashSet<>();
 
                         for(int i=0; i<modeloUsuarios.size(); i++){
                             if(bloqueados.contains(modeloUsuarios.getElementAt(i))){
@@ -235,6 +261,14 @@ public class ClienteBB {
                             java.util.List<String> seleccionados = listaUsuarios.getSelectedValuesList();
                             bloqueados.clear();
                             bloqueados.addAll(seleccionados);
+                            try(java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.FileWriter(archivoBloqueados, false))) {
+                                for(String u : bloqueados){
+                                    pw.println(u);
+                                }
+                            } catch (IOException ex) {
+                                JOptionPane.showMessageDialog(frameBloquear, "Error al guardar el archivo de bloqueados: " + ex.getMessage());
+                                return;
+                            }
                             JOptionPane.showMessageDialog(frameBloquear, "Usuarios bloqueados actualizados.");
                             frameBloquear.dispose();
 
