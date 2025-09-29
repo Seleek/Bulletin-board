@@ -174,14 +174,48 @@ public class ServidorBB {
     } else {
         escritor.println("ERROR_ELIMINAR");
     }
-}else if(mensaje != null && mensaje.equals("LISTA_USUARIOS")){
+}else if(mensaje != null && mensaje.equals("LISTA_USUARIOS:")){
+    String usuarioSolicitante = mensaje.split(":",2)[1];
     File archivoUsuarios = new File("usuarios.txt");
+    File carpetaUsuarios = new File("usuarios");
     if (archivoUsuarios.exists()) {
         try (BufferedReader br = new BufferedReader(new FileReader(archivoUsuarios))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split(",");
-                escritor.println(partes[0]);
+                String usuario = (partes[0]);
+                if(usuario.equals(usuarioSolicitante)) continue;
+
+                File bloqueadosSolicitante = new File ("bloqueados_" + usuarioSolicitante + ".txt");
+                boolean estaBloqueado = false;
+                if(bloqueadosSolicitante.exists()){
+                    try (BufferedReader brb = new BufferedReader(new FileReader(bloqueadosSolicitante))){
+                        String bloq;
+                        while((bloq = brb.readLine()) != null){
+                            if(bloq.trim().equals(usuario)){
+                                estaBloqueado = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(estaBloqueado) continue;
+
+                File bloqueadosOtro = new File("bloqueados_" + usuario + ".txt");
+                boolean meTieneBloqueado = false;
+                if(bloqueadosOtro.exists()){
+                    try(BufferedReader brb = new BufferedReader (new FileReader(bloqueadosOtro))){
+                        String bloq;
+                        while((bloq = brb.readLine()) != null){
+                            if(bloq.trim().equals(usuarioSolicitante)){
+                                meTieneBloqueado = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(meTieneBloqueado) continue;
+                escritor.println(usuario);
             }
         }
     }

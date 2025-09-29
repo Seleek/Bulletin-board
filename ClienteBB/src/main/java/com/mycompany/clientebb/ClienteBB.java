@@ -238,7 +238,7 @@ public class ClienteBB {
                             PrintWriter escritorUsuarios = new PrintWriter(socketUsuarios.getOutputStream(), true);
                             BufferedReader lectorUsuarios = new BufferedReader(new InputStreamReader(socketUsuarios.getInputStream()));
                     ){
-                            escritorUsuarios.println("LISTA_USUARIOS");
+                            escritorUsuarios.println("LISTA_USUARIOS:" + usuarioRemitente);
                             String linea;
                             while ((linea = lectorUsuarios.readLine()) != null) {
                                 if(linea.equals("__END__")) break;
