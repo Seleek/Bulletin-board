@@ -242,9 +242,7 @@ public class ClienteBB {
                             String linea;
                             while ((linea = lectorUsuarios.readLine()) != null) {
                                 if(linea.equals("__END__")) break;
-                                if (!linea.equals(usuarioRemitente)) {
-                                    modeloUsuarios.addElement(linea);
-                                }
+                                    modeloUsuarios.addElement(linea);                               
                             }
                         } catch (IOException ex) {
                             JOptionPane.showMessageDialog(frameBloquear, "Error al obtener la lista de usuarios: " + ex.getMessage());
