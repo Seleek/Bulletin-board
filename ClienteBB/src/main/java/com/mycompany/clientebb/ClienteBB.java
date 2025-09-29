@@ -12,6 +12,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
@@ -97,6 +98,9 @@ public class ClienteBB {
                     javax.swing.JButton btnVerMensajes = new javax.swing.JButton("Ver mensajes");
                     javax.swing.JButton btnEscribirMensaje = new javax.swing.JButton("Enviar mensaje");
                     javax.swing.JButton btnCerrarSesion = new javax.swing.JButton("Cerrar sesión");
+                    JButton btnBloquearUsuarios = new JButton("Bloquear usuarios");
+                    frame.add(btnBloquearUsuarios);
+
                     btnCerrarSesion.addActionListener(e -> {
                         frame.dispose();
                     });
@@ -192,13 +196,16 @@ public class ClienteBB {
                         frameMensajes.setVisible(true);
                     });
 
-                    btnEscribirMensaje.addActionListener(e -> {
-                        javax.swing.JFrame escribirFrame = new javax.swing.JFrame("Enviar mensaje");
-                        escribirFrame.setSize(400,300);
-                        escribirFrame.setLayout(new java.awt.BorderLayout());
-                        javax.swing.JPanel panelSuperior = new javax.swing.JPanel(new java.awt.FlowLayout());
-                        javax.swing.JLabel lblDestinatario = new javax.swing.JLabel("Para:");
-                        DefaultComboBoxModel<String> modeloUsuarios = new DefaultComboBoxModel<>();
+                    btnBloquearUsuarios.addActionListener(e -> {
+                        javax.swing.JFrame frameBloquear = new javax.swing.JFrame("Bloquear usuarios");
+                        frameBloquear.setSize(400,300);
+                        frameBloquear.setLayout(new java.awt.BorderLayout());
+
+                        DefaultListModel<String> modeloUsuarios = new DefaultListModel<>();
+                        JList<String> listaUsuarios = new JList<>(modeloUsuarios);
+                        listaUsuarios.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                        JScrollPane scrollPane = new JScrollPane(listaUsuarios);
+
                         try (
                             Socket socketUsuarios = new Socket("localhost", 8080);
                             PrintWriter escritorUsuarios = new PrintWriter(socketUsuarios.getOutputStream(), true);
@@ -213,9 +220,60 @@ public class ClienteBB {
                                 }
                             }
                         } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(frameBloquear, "Error al obtener la lista de usuarios: " + ex.getMessage());
+                        }
+
+                        java.util.Set<String> bloqueados = new java.util.HashSet<>();
+
+                        for(int i=0; i<modeloUsuarios.size(); i++){
+                            if(bloqueados.contains(modeloUsuarios.getElementAt(i))){
+                                listaUsuarios.addSelectionInterval(i, i);
+                            }
+                        }
+                        JButton btnGuardar = new JButton("Guardar usuarios bloqueados");
+                        btnGuardar.addActionListener(ev ->{
+                            java.util.List<String> seleccionados = listaUsuarios.getSelectedValuesList();
+                            bloqueados.clear();
+                            bloqueados.addAll(seleccionados);
+                            JOptionPane.showMessageDialog(frameBloquear, "Usuarios bloqueados actualizados.");
+                            frameBloquear.dispose();
+
+                        });
+                        JButton btnVolver = new JButton("Volver");
+                        btnVolver.addActionListener(ev -> frameBloquear.dispose());
+                        JPanel panelBotones = new javax.swing.JPanel(new java.awt.FlowLayout());
+                        panelBotones.add(btnGuardar);
+                        panelBotones.add(btnVolver);
+                        frameBloquear.add(new JScrollPane(listaUsuarios), BorderLayout.CENTER);
+                        frameBloquear.add(panelBotones, BorderLayout.SOUTH);
+                        frameBloquear.setLocationRelativeTo(null);
+                        frameBloquear.setVisible(true);
+                    });
+
+                    btnEscribirMensaje.addActionListener(evt -> {
+                        javax.swing.JFrame escribirFrame = new javax.swing.JFrame("Enviar mensaje");
+                        escribirFrame.setSize(400,300);
+                        escribirFrame.setLayout(new java.awt.BorderLayout());
+                        javax.swing.JPanel panelSuperior = new javax.swing.JPanel(new java.awt.FlowLayout());
+                        javax.swing.JLabel lblDestinatario = new javax.swing.JLabel("Para:");
+                        DefaultComboBoxModel<String> modeloUsuariosCombo = new DefaultComboBoxModel<>();
+                        try (
+                            Socket socketUsuarios = new Socket("localhost", 8080);
+                            PrintWriter escritorUsuarios = new PrintWriter(socketUsuarios.getOutputStream(), true);
+                            BufferedReader lectorUsuarios = new BufferedReader(new InputStreamReader(socketUsuarios.getInputStream()));
+                    ){
+                            escritorUsuarios.println("LISTA_USUARIOS");
+                            String linea;
+                            while ((linea = lectorUsuarios.readLine()) != null) {
+                                if(linea.equals("__END__")) break;
+                                if (!linea.equals(usuarioRemitente)) {
+                                    modeloUsuariosCombo.addElement(linea);
+                                }
+                            }
+                        } catch (IOException ex) {
                             JOptionPane.showMessageDialog(escribirFrame, "Error al obtener la lista de usuarios: " + ex.getMessage());
                         }
-                        javax.swing.JComboBox<String> comboDestinatarios = new javax.swing.JComboBox<>(modeloUsuarios);
+                        javax.swing.JComboBox<String> comboDestinatarios = new javax.swing.JComboBox<>(modeloUsuariosCombo);
                         comboDestinatarios.setEditable(true);
                         panelSuperior.add(lblDestinatario);
                         panelSuperior.add(comboDestinatarios);
